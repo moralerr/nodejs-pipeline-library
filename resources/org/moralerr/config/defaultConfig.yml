@@ -1,4 +1,4 @@
 branch: 'main'
 dockerCredentialsId: 'DOCKER_HUB'
-dockerRegistryUrl: 'https://docker.io/moralerr/examples'
+dockerRegistryUrl: 'moralerr/examples'
 dockerImageName: 'example-app'

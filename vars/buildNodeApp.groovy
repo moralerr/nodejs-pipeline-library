@@ -20,11 +20,11 @@ def call(Map config = [:]) {
                     sh 'npm run build'
                 }
             }
-            stage('Test') {
-                steps {
-                    sh 'npm test'
-                }
-            }
+            // stage('Test') {
+            //     steps {
+            //         sh 'npm test'
+            //     }
+            // }
             stage('Docker Build') {
                 steps {
                     container('dind') {

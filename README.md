@@ -3,6 +3,7 @@
 This is a Jenkins shared library for building, testing, creating Docker images, and pushing the images to a registry for Node.js projects. It supports automatic detection of new releases using GitHub tags and allows configuration flexibility for different projects.
 
 ## Project Structure
+
 ```
 
 nodejs-pipeline-library/
@@ -18,7 +19,7 @@ nodejs-pipeline-library/
 └── config/
 └── defaultConfig.yml
 
-````
+```
 
 ## Usage
 
@@ -43,7 +44,7 @@ buildNodeApp(
     branch: 'develop',
     dockerImageName: 'my-node-app'
 )
-````
+```
 
 ### 3. Customize Default Configuration
 
@@ -52,7 +53,6 @@ The default configuration is defined in `resources/org/example/config/defaultCon
 Example `defaultConfig.yml`:
 
 ```yaml
-repoUrl: "https://github.com/example/repo.git"
 branch: "main"
 dockerCredentialsId: "docker-credentials"
 dockerRegistryUrl: "https://registry.example.com"

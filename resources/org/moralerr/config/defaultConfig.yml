@@ -1,5 +1,4 @@
-repoUrl: 'https://docker.io/moralerr/examples'
 branch: 'main'
 dockerCredentialsId: 'DOCKER_HUB'
-dockerRegistryUrl: 'moralerr/examples'
+dockerRegistryUrl: 'https://docker.io/moralerr/examples'
 dockerImageName: 'example-app'

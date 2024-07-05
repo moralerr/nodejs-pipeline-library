@@ -3,17 +3,16 @@ def call(Map config = [:]) {
     config = defaultConfig + config
 
     pipeline {
-        agent any
+        agent {
+            kubernetes {
+                inheritFrom 'nodejs'
+            }
+        }
         environment {
             DOCKER_CREDENTIALS_ID = config.dockerCredentialsId
             DOCKER_REGISTRY_URL = config.dockerRegistryUrl
         }
         stages {
-            stage('Checkout') {
-                steps {
-                    git url: config.repoUrl, branch: config.branch
-                }
-            }
             stage('Build') {
                 steps {
                     sh 'npm install'
@@ -28,7 +27,7 @@ def call(Map config = [:]) {
             stage('Docker Build') {
                 steps {
                     script {
-                        def imageTag = "${config.dockerRegistryUrl}/${config.dockerImageName}:${config.branch}-${env.BUILD_NUMBER}"
+                        def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
                         sh "docker build -t ${imageTag} ."
                     }
                 }
@@ -36,7 +35,7 @@ def call(Map config = [:]) {
             stage('Docker Push') {
                 steps {
                     script {
-                        def imageTag = "${config.dockerRegistryUrl}/${config.dockerImageName}:${config.branch}-${env.BUILD_NUMBER}"
+                        def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
                         withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                             sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin ${config.dockerRegistryUrl}"
                             sh "docker push ${imageTag}"
@@ -52,7 +51,7 @@ def call(Map config = [:]) {
                 }
                 steps {
                     script {
-                        def releaseTag = "${config.dockerRegistryUrl}/${config.dockerImageName}:${env.GIT_TAG}"
+                        def releaseTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${env.GIT_TAG}"
                         sh "docker tag ${imageTag} ${releaseTag}"
                         sh "docker push ${releaseTag}"
                     }

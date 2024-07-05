@@ -62,7 +62,7 @@ def call(Map config = [:]) {
                 steps {
                     container('dind') {
                         script {
-                            def releaseTag = "${config.dockerRegistryUrl}/${config.dockerImageName}:${env.GIT_TAG}"
+                            def releaseTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${env.GIT_TAG}"
                             sh "docker tag ${imageTag} ${releaseTag}"
                             sh "docker push ${releaseTag}"
                         }

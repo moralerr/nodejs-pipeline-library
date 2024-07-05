@@ -1,6 +1,7 @@
 def call(Map config = [:]) {
     def defaultConfig = readYaml(text: libraryResource('org/moralerr/config/defaultConfig.yml'))
     config = defaultConfig + config
+    println config
 
     pipeline {
         agent {
@@ -26,19 +27,23 @@ def call(Map config = [:]) {
             }
             stage('Docker Build') {
                 steps {
-                    script {
-                        def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
-                        sh "docker build -t ${imageTag} ."
+                    container('dind') {
+                        script {
+                            def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
+                            sh "docker build -t ${imageTag} ."
+                        }
                     }
                 }
             }
             stage('Docker Push') {
                 steps {
-                    script {
-                        def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
-                        withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                            sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin ${config.dockerRegistryUrl}"
-                            sh "docker push ${imageTag}"
+                    container('dind') {
+                        script {
+                            def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
+                            withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin ${config.dockerRegistryUrl}"
+                                sh "docker push ${imageTag}"
+                            }
                         }
                     }
                 }
@@ -50,10 +55,12 @@ def call(Map config = [:]) {
                     }
                 }
                 steps {
-                    script {
-                        def releaseTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${env.GIT_TAG}"
-                        sh "docker tag ${imageTag} ${releaseTag}"
-                        sh "docker push ${releaseTag}"
+                    container('dind') {
+                        script {
+                            def releaseTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${env.GIT_TAG}"
+                            sh "docker tag ${imageTag} ${releaseTag}"
+                            sh "docker push ${releaseTag}"
+                        }
                     }
                 }
             }

@@ -10,8 +10,8 @@ def call(Map config = [:]) {
             }
         }
         environment {
-            DOCKER_CREDENTIALS_ID = config.dockerCredentialsId
-            DOCKER_REGISTRY_URL = config.dockerRegistryUrl
+            DOCKER_CREDENTIALS_ID = "${config.dockerCredentialsId}"
+            DOCKER_REGISTRY_URL = "${config.dockerRegistryUrl}"
         }
         stages {
             stage('Build') {

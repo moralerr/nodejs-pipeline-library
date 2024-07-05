@@ -14,23 +14,28 @@ def call(Map config = [:]) {
             DOCKER_REGISTRY_URL = "${config.dockerRegistryUrl}"
         }
         stages {
+            stage('Copy Dockerfile') {
+                steps {
+                    script {
+                        if (!fileExists('Dockerfile')) {
+                            writeFile file: 'Dockerfile', text: libraryResource('Dockerfile')
+                        }
+                    }
+                }
+            }
             stage('Build') {
                 steps {
                     sh 'npm install'
                     sh 'npm run build'
                 }
             }
-            // stage('Test') {
-            //     steps {
-            //         sh 'npm test'
-            //     }
-            // }
             stage('Docker Build') {
                 steps {
                     container('dind') {
                         script {
                             def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
-                            sh "docker build -t ${imageTag} ."
+                            def buildEnv = config.buildEnv ?: 'production'
+                            sh "docker build --build-arg BUILD_ENV=${buildEnv} -t ${imageTag} ."
                         }
                     }
                 }

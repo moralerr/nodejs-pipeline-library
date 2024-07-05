@@ -33,7 +33,7 @@ def call(Map config = [:]) {
                 steps {
                     container('dind') {
                         script {
-                            def imageTag = "${config.dockerRegistryUrl}/${config.dockerImageName}:${config.branch}-${env.BUILD_NUMBER}"
+                            def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
                             def buildEnv = config.buildEnv ?: 'production'
                             sh "docker build --build-arg BUILD_ENV=${buildEnv} -t ${imageTag} ."
                         }

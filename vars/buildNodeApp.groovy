@@ -46,7 +46,7 @@ def call(Map config = [:]) {
                         script {
                             def imageTag = "${config.dockerRegistryUrl}/${config.dockerImageName}:${config.branch}-${env.BUILD_NUMBER}"
                             withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                sh "echo \$DOCKER_PASSWORD | docker login -u \$DOCKER_USERNAME --password-stdin ${config.dockerRegistryUrl}"
+                                sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
                                 sh "docker push ${imageTag}"
                             }
                         }

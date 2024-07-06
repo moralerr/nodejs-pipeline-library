@@ -14,8 +14,7 @@ RUN npm install
 COPY . .
 
 # Build the application
-ARG BUILD_ENV=production
-RUN npm run build -- --configuration=${BUILD_ENV}
+RUN npm run build
 
 # Serve stage
 FROM nginx:alpine

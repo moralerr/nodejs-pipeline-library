@@ -8,6 +8,8 @@ WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
+RUN npm config set fetch-retry-mintimeout 20000
+RUN npm config set fetch-retry-maxtimeout 120000
 RUN npm install
 
 # Copy application source code

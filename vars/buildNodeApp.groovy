@@ -23,12 +23,14 @@ def call(Map config = [:]) {
                     }
                 }
             }
-            stage('Build') {
-                steps {
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
-            }
+            // stage('Build') {
+            //     steps {
+            //         sh 'npm config set fetch-retry-mintimeout 20000'
+            //         sh 'npm config set fetch-retry-maxtimeout 120000'
+            //         sh 'npm install'
+            //         sh 'npm run build'
+            //     }
+            // }
             stage('Docker Build') {
                 steps {
                     container('dind') {

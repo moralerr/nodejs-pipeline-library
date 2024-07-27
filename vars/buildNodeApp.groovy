@@ -1,3 +1,4 @@
+@Library('pipeline-commons@preview') _
 def call(Map config = [:]) {
     def defaultConfig = readYaml(text: libraryResource('org/moralerr/config/defaultConfig.yml'))
     config = defaultConfig + config

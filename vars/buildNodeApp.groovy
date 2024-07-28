@@ -19,8 +19,13 @@ def call(Map config = [:]) {
             stage('Copy Dockerfile') {
                 steps {
                     script {
+                        echo 'Checking if Dockerfile exists...'
                         if (!fileExists('Dockerfile')) {
+                            echo 'Dockerfile not found. Copying from library resources...'
                             writeFile file: 'Dockerfile', text: libraryResource('Dockerfile')
+                            echo 'Dockerfile successfully copied.'
+                        } else {
+                            echo 'Dockerfile already exists. No action taken.'
                         }
                     }
                 }

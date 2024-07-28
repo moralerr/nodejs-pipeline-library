@@ -1,4 +1,4 @@
-branch: 'main'
+branch: "${env.BRANCH_NAME ? env.BRANCH_NAME : main}"
 dockerCredentialsId: 'DOCKER_HUB'
 dockerRegistryUrl: 'moralerr/examples'
 dockerImageName: 'example-app'

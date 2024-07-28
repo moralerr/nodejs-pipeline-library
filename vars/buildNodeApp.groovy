@@ -3,6 +3,7 @@ def call(Map config = [:]) {
     def defaultConfig = readYaml(text: libraryResource('org/moralerr/config/defaultConfig.yml'))
     config = defaultConfig + config
     println config
+    utils.logMapReadable(config)
 
     pipeline {
         agent {

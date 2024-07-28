@@ -4,7 +4,7 @@ def call(Map config = [:]) {
     config = defaultConfig + config
     println config
     utils.logMapReadable(config)
-
+    utils.replaceTemplateStringsInYamlContent(config)
     pipeline {
         agent {
             kubernetes {

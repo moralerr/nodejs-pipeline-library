@@ -3,6 +3,9 @@
 # Build stage
 FROM node:18-alpine AS builder
 
+# Define build argument for the source directory
+ARG SOURCE_DIR=/app/dist/sgbeats-ui/browser
+
 # Set working directory
 WORKDIR /app
 
@@ -23,7 +26,7 @@ RUN npm run build -- --configuration $BUILD_ENV
 FROM nginx:alpine
 
 # Copy the built app from the 'builder' stage to the Nginx public folder
-COPY --from=builder /app/dist/ /usr/share/nginx/html
+COPY --from=builder ${SOURCE_DIR} /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80

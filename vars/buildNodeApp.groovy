@@ -44,7 +44,8 @@ def call(Map config = [:]) {
                         script {
                             def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
                             def buildEnv = config.buildEnv ?: 'production'
-                            sh "docker build --build-arg BUILD_ENV=${buildEnv} -t ${imageTag} ."
+                            def sourceDir = config.sourceDir ?: '/app/dist/sgbeats-ui/browser'
+                            sh "docker build --build-arg BUILD_ENV=${buildEnv} --build-arg SOURCE_DIR=${sourceDir} -t ${imageTag} ."
                         }
                     }
                 }

@@ -3,8 +3,9 @@
 # Build stage
 FROM node:18-alpine AS builder
 
-# Define build argument for the source directory
+# Define build argument for the source directory with a default value
 ARG SOURCE_DIR=/app/dist/sgbeats-ui/browser
+ENV SOURCE_DIR=${SOURCE_DIR:-/app/dist/sgbeats-ui/browser}
 
 # Set working directory
 WORKDIR /app

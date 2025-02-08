@@ -3,9 +3,6 @@
 # Build stage
 FROM node:18-alpine AS builder
 
-# Define build argument for the source directory with a default value
-ARG SOURCE_DIR=/app/dist/sgbeats-ui/browser
-
 # Set working directory
 WORKDIR /app
 
@@ -24,6 +21,9 @@ RUN npm run build -- --configuration $BUILD_ENV
 
 # Serve stage
 FROM nginx:alpine
+
+# Define build argument for the source directory with a default value
+ARG SOURCE_DIR=/app/dist/sgbeats-ui/browser
 
 # Copy the built app from the 'builder' stage to the Nginx public folder
 COPY --from=builder $SOURCE_DIR /usr/share/nginx/html

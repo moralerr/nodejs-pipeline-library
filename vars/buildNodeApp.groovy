@@ -83,7 +83,11 @@ def call(Map config = [:]) {
                 steps {
                     script{
                         sh 'rm -rf helm-charts'
-                        sh 'git clone https://github.com/moralerr/helm-charts.git helm-charts'
+                        withCredentials([usernamePassword(credentialsId: 'GITHUB_ADMIN_TOKEN_AS_PASS',
+                                                             passwordVariable: 'GIT_PASSWORD',
+                                                             usernameVariable: 'GIT_USERNAME')]) {
+                            sh "git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/moralerr/helm-charts.git helm-charts"
+                                                             }
                         dir('helm-charts') {
                             def valuesFile = "applications/${config.dockerImageName}/values.yaml"
                             def values = readYaml file: valuesFile
@@ -94,7 +98,7 @@ def call(Map config = [:]) {
                                 git config user.email "moralerrusc@gmail.com"
                                 git config user.name "Ricky"
                             '''
-                            
+
                             // Check if branch 'test' exists and create it if it does not
                             def branchExists = sh(script: 'git ls-remote --heads origin test', returnStatus: true) == 0
                             if (!branchExists) {

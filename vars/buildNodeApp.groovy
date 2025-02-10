@@ -14,6 +14,7 @@ def call(Map config = [:]) {
         environment {
             DOCKER_CREDENTIALS_ID = "${config.dockerCredentialsId}"
             DOCKER_REGISTRY_URL = "${config.dockerRegistryUrl}"
+            AUTO_DEPLOY_BRANCH = "main"
         }
         stages {
             stage('Copy Dockerfile') {
@@ -96,18 +97,18 @@ def call(Map config = [:]) {
                             // Update the 'tag' value within the 'image' section
                             valuesContent.image.tag = newTag
                             // Write updated content back to the YAML file
-                            writeYaml(file: valuesFile, data: valuesContent)
+                            writeYaml(file: valuesFile, data: valuesContent, overwrite: true)
 
                             sh '''
                                 git config user.email "moralerrusc@gmail.com"
                                 git config user.name "Ricky"
                             '''
 
-                            sh 'git checkout -b test'
+                            //sh 'git checkout -b test'
 
                             sh "git add ${valuesFile}"
                             sh "git commit -m 'Update image tag to ${newTag}'"
-                            sh 'git push origin test'
+                            sh "git push origin ${env.AUTO_DEPLOY_BRANCH}"
                         }
                     }
                 }

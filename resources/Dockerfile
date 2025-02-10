@@ -11,9 +11,9 @@ WORKDIR /app
 
 # Install dependencies
 COPY package*.json ./
-RUN npm config set fetch-retry-mintimeout 20000
-RUN npm config set fetch-retry-maxtimeout 120000
-RUN npm install
+RUN npm config set fetch-retry-mintimeout 20000 \
+    && npm config set fetch-retry-maxtimeout 120000 \
+    && npm install
 
 # Copy application source code
 COPY . .
@@ -25,8 +25,11 @@ RUN npm run build -- --configuration $BUILD_ENV
 # Serve stage
 FROM nginx:alpine
 
+# Define build argument for the source directory with a default value
+ARG SOURCE_DIR=/app/dist/sgbeats-ui/browser
+
 # Copy the built app from the 'builder' stage to the Nginx public folder
-COPY --from=builder ${SOURCE_DIR} /usr/share/nginx/html
+COPY --from=builder $SOURCE_DIR /usr/share/nginx/html
 
 # Expose port 80
 EXPOSE 80

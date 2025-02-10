@@ -90,19 +90,22 @@ def call(Map config = [:]) {
                                                              }
                         dir('helm-charts') {
                             def valuesFile = "applications/${config.dockerImageName}/values.yaml"
-                            def values = readYaml file: valuesFile
-                            values.tag = "${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
-                            writeYaml file: valuesFile, data: values, overwrite: true
+                            // Read file content
+                            def valuesContent = readFile(file: valuesFile)
+                            def newTag = "${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
+                            // Update only the 'tag' line (assumes unique 'tag:' line)
+                            def updatedContent = valuesContent.replaceAll(/(?m)^(\\s*image\\.tag:\\s*).*/, "\$1${newTag}")
+                            writeFile(file: valuesFile, text: updatedContent)
 
                             sh '''
                                 git config user.email "moralerrusc@gmail.com"
                                 git config user.name "Ricky"
                             '''
-                            
+
                             sh 'git checkout -b test'
 
                             sh "git add ${valuesFile}"
-                            sh "git commit -m 'Update image tag to ${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}'"
+                            sh "git commit -m 'Update image tag to ${newTag}'"
                             sh 'git push origin test'
                         }
                     }

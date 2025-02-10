@@ -79,6 +79,37 @@ def call(Map config = [:]) {
                     }
                 }
             }
+            stage('Auto Deploy') {
+                steps {
+                    script{
+                        sh 'rm -rf helm-charts'
+                        sh 'git clone https://github.com/moralerr/helm-charts.git helm-charts'
+                        dir('helm-charts') {
+                            def valuesFile = "applications/${config.dockerImageName}/values.yaml"
+                            def values = readYaml file: valuesFile
+                            values.tag = "${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
+                            writeYaml file: valuesFile, data: values
+
+                            sh '''
+                                git config user.email "moralerrusc@gmail.com"
+                                git config user.name "Ricky"
+                            '''
+                            
+                            // Check if branch 'test' exists and create it if it does not
+                            def branchExists = sh(script: 'git ls-remote --heads origin test', returnStatus: true) == 0
+                            if (!branchExists) {
+                                sh 'git checkout -b test'
+                            } else {
+                                sh 'git checkout test'
+                            }
+
+                            sh "git add ${valuesFile}"
+                            sh "git commit -m 'Update image tag to ${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}'"
+                            sh 'git push origin test'
+                        }
+                    }
+                }
+            }
         }
     }
 }

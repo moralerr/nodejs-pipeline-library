@@ -46,7 +46,7 @@ def call(Map config = [:]) {
                             def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                             def buildEnv = config.buildEnv ?: 'production'
                             def sourceDir = config.sourceDir ?: '/app/dist'
-                            sh "docker build --build-arg BUILD_ENV=${buildEnv} --build-arg SOURCE_DIR=${sourceDir} -t ${imageTag} ."
+                            sh "docker build --build-arg BUILD_ENV=${buildEnv} -t ${imageTag} ."
                         }
                     }
                 }

@@ -93,8 +93,8 @@ def call(Map config = [:]) {
                             // Read file content
                             def valuesContent = readFile(file: valuesFile)
                             def newTag = "${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
-                            // Update only the 'tag' line (assumes unique 'tag:' line)
-                            def updatedContent = valuesContent.replaceAll(/(?m)^(\\s*image\\.tag:\\s*).*/, "\$1${newTag}")
+                            // Update only the 'tag' line within the 'image' section
+                            def updatedContent = valuesContent.replaceAll(/(?m)^(\\s*tag:\\s*).*/, "\$1${newTag}")
                             writeFile(file: valuesFile, text: updatedContent)
 
                             sh '''

@@ -39,31 +39,31 @@ def call(Map config = [:]) {
             //         sh 'npm run build'
             //     }
             // }
-            // stage('Docker Build') {
-            //     steps {
-            //         container('dind') {
-            //             script {
-            //                 def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
-            //                 def buildEnv = config.buildEnv ?: 'production'
-            //                 def sourceDir = config.sourceDir ?: '/app/dist'
-            //                 sh "docker build --build-arg BUILD_ENV=${buildEnv} --build-arg SOURCE_DIR=${sourceDir} -t ${imageTag} ."
-            //             }
-            //         }
-            //     }
-            // }
-            // stage('Docker Push') {
-            //     steps {
-            //         container('dind') {
-            //             script {
-            //                 def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
-            //                 withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-            //                     sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
-            //                     sh "docker push ${imageTag}"
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }
+            stage('Docker Build') {
+                steps {
+                    container('dind') {
+                        script {
+                            def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${env.BRANCH_NAM}-${env.BUILD_NUMBER}"
+                            def buildEnv = config.buildEnv ?: 'production'
+                            def sourceDir = config.sourceDir ?: '/app/dist'
+                            sh "docker build --build-arg BUILD_ENV=${buildEnv} --build-arg SOURCE_DIR=${sourceDir} -t ${imageTag} ."
+                        }
+                    }
+                }
+            }
+            stage('Docker Push') {
+                steps {
+                    container('dind') {
+                        script {
+                            def imageTag = "${config.dockerRegistryUrl}:${config.dockerImageName}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
+                            withCredentials([usernamePassword(credentialsId: env.DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                sh 'echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin'
+                                sh "docker push ${imageTag}"
+                            }
+                        }
+                    }
+                }
+            }
             stage('Release') {
                 when {
                     expression {
@@ -93,7 +93,7 @@ def call(Map config = [:]) {
                             def valuesFile = "applications/${config.dockerImageName}/values.yaml"
                             // Read YAML file content
                             def valuesContent = readYaml(file: valuesFile)
-                            def newTag = "${config.dockerImageName}-${config.branch}-${env.BUILD_NUMBER}"
+                            def newTag = "${config.dockerImageName}-${env.BRANCH_NAME}-${env.BUILD_NUMBER}"
                             // Update the 'tag' value within the 'image' section
                             valuesContent.image.tag = newTag
                             // Write updated content back to the YAML file

@@ -1,10 +1,7 @@
 # syntax=docker/dockerfile:1
 
-# Build stage
-FROM node:18-alpine AS builder
-
-# Define build argument for the source directory
-ARG SOURCE_DIR=/app/dist/sgbeats-ui/browser
+# Use node:18-alpine as the base image
+FROM node:18-alpine
 
 # Set working directory
 WORKDIR /app
@@ -22,17 +19,8 @@ COPY . .
 ARG BUILD_ENV=production
 RUN npm run build -- --configuration $BUILD_ENV
 
-# Serve stage
-FROM nginx:alpine
+# Expose port 3000 (assuming your app runs on port 3000)
+EXPOSE 4200
 
-# Define build argument for the source directory with a default value
-ARG SOURCE_DIR=/app/dist/sgbeats-ui/browser
-
-# Copy the built app from the 'builder' stage to the Nginx public folder
-COPY --from=builder $SOURCE_DIR /usr/share/nginx/html
-
-# Expose port 80
-EXPOSE 80
-
-# Command to start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Command to start the application
+CMD ["npm", "run", "start"]
